@@ -28,6 +28,8 @@ jobs:
       run: |
         # step 1: order extensions alphabetically
         export EXTENSIONS=$(echo "${{ github.event.inputs.EXTENSIONS }}" | tr ' ' '\n' | sort | tr '\n' ' ')
+        # step 2: replace spaces with dashes
+        export EXTENSIONS=$(echo "${{ github.event.inputs.EXTENSIONS }}" | sed 's/ /-/g')
 
         # this is good but it leaves a trailing space. Fix it:
         export EXTENSIONS=$(echo "${EXTENSIONS}" | sed 's/ $//g')
