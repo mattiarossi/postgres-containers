@@ -23,7 +23,7 @@ for EXTENSION in ${EXTENSIONS}; do
             libc++-dev \
             libncurses5 \
             libc++abi-dev \
-                libstdc++-12-dev \
+                libstdc++-10-dev \
                 wget \
                 zlib1g-dev \
                 libtinfo5" \
