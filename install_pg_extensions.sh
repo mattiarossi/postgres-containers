@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
-
+PLV8_VERSION=3.2.3
 # calling syntax: install_pg_extensions.sh [extension1] [extension2] ...
 
 # install extensions
@@ -8,29 +8,43 @@ EXTENSIONS="$@"
 # cycle through extensions list
 for EXTENSION in ${EXTENSIONS}; do    
     # special case: timescaledb
-    if [ "$EXTENSION" == "timescaledb" ]; then
+    if [ "$EXTENSION" == "plv8" ]; then
         # dependencies
-        apt-get install apt-transport-https lsb-release wget -y
-
-        # repository
-        echo "deb https://packagecloud.io/timescale/timescaledb/debian/" \
-            "$(lsb_release -c -s) main" \
-            > /etc/apt/sources.list.d/timescaledb.list
-
-        # key
-        wget --quiet -O - https://packagecloud.io/timescale/timescaledb/gpgkey \
-            | gpg --dearmor > /etc/apt/trusted.gpg.d/timescaledb.gpg
-        
-        apt-get update
-        apt-get install --yes \
-            timescaledb-tools \
-            timescaledb-toolkit-postgresql-${PG_MAJOR} \
-            timescaledb-2-loader-postgresql-${PG_MAJOR} \
-            timescaledb-2-${TIMESCALEDB_VERSION}-postgresql-${PG_MAJOR}
-
-        # cleanup
-        apt-get remove apt-transport-https lsb-release wget --auto-remove -y
-
+        buildDependencies="build-essential \
+            ca-certificates \
+            curl \
+            git-core \
+            gpp \
+            cpp \
+                gnupg dirmngr \
+            pkg-config \
+            apt-transport-https \
+            cmake \
+            libc++-dev \
+            libncurses5 \
+            libc++abi-dev \
+                libstdc++-12-dev \
+                wget \
+                zlib1g-dev \
+                libtinfo5" \
+            runtimeDependencies="libc++1" \
+            && apt-get update && apt-get install -y --no-install-recommends ${buildDependencies} ${runtimeDependencies}
+    
+        mkdir -p /tmp/build \
+          && curl -o /tmp/build/v3.2.3.tar.gz -SL "https://github.com/plv8/plv8/archive/refs/tags/v3.2.3.tar.gz" \
+          && cd /tmp/build \
+          && tar -xzf /tmp/build/v3.2.3.tar.gz -C /tmp/build/
+        cd /tmp/build/plv8-3.2.3/deps \
+          && git clone https://github.com/bnoordhuis/v8-cmake.git \
+          && cd /tmp/build/plv8-3.2.3 \
+          && git init \
+          && make \
+          && make install \
+          && strip /usr/lib/postgresql/${PG_VERSION}/lib/plv8-3.2.3.so
+        apt-get clean \
+          && apt-get remove -y ${buildDependencies} \
+          && apt-get autoremove -y \
+          && rm -rf /tmp/build /var/lib/apt/lists/*
         continue
     fi
 
