@@ -33,9 +33,9 @@ jobs:
 
         # this is good but it leaves a trailing space. Fix it:
         export EXTENSIONS=$(echo "${EXTENSIONS}" | sed 's/ $//g')
-
+        export TIMESTAMP=$(date '+%Y%m%d%H%M')
         # step 3: output variable to github action
-        echo "IMAGE_TAG=${{ github.event.inputs.PG_VERSION }}-${EXTENSIONS}" >> $GITHUB_OUTPUT
+        echo "IMAGE_TAG=${{ github.event.inputs.PG_VERSION }}-${EXTENSIONS}-${TIMESTAMP}" >> $GITHUB_OUTPUT
     - uses: docker/build-push-action@v3
       with:
         context: .
