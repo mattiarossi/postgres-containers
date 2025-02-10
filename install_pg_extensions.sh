@@ -42,7 +42,7 @@ for EXTENSION in ${EXTENSIONS}; do
           && git init \
           && make \
           && make install \
-          && strip /usr/lib/postgresql/${PG_VERSION}/lib/plv8-3.2.3.so
+          && strip /usr/lib/postgresql/${POSTGRESQL_MAJOR_VERSION}/lib/plv8-3.2.3.so
         apt-get clean \
           && apt-get remove -y ${buildDependencies} \
           && apt-get autoremove -y \
