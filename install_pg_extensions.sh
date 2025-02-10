@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
+POSTGRESQL_MAJOR_VERSION=17
 PLV8_VERSION=3.2.3
 # calling syntax: install_pg_extensions.sh [extension1] [extension2] ...
 
@@ -26,6 +27,7 @@ for EXTENSION in ${EXTENSIONS}; do
                 libstdc++-10-dev \
                 wget \
                 zlib1g-dev \
+                postgresql-server-dev-${POSTGRESQL_MAJOR_VERSION} \
                 libtinfo5" \
             runtimeDependencies="libc++1" \
             && apt-get update && apt-get install -y --no-install-recommends ${buildDependencies} ${runtimeDependencies}
